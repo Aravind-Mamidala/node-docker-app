@@ -41,8 +41,8 @@
 
         stage('Checkout from GitHub') {
             steps {
-                git branch: 'master',
-    url: 'https://github.com/Aravind-Mamidala/node-k8s-app.git',
+			git branch: 'main',
+    url: 'https://github.com/Aravind-Mamidala/node-docker-app.git',
     credentialsId: 'github-creds'
                 }
         }
