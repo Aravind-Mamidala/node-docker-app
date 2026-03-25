@@ -65,7 +65,11 @@
         stage('Docker Login') {
     steps {
         sh '''
-        echo "Aravind@123" | docker login -u aravind-mamidala --password-stdin
+withCredentials([string(credentialsId: 'docker-creds', variable: 'TOKEN')]) {
+    sh '''
+    echo "$TOKEN" | docker login -u aravind-mamidala --password-stdin
+    '''
+}
         '''
     }
 }
