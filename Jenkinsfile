@@ -33,18 +33,17 @@
  //   }
  
 
-
- pipeline {
+pipeline {
     agent any
 
     stages {
 
         stage('Checkout from GitHub') {
             steps {
-			git branch: 'main',
-    url: 'https://github.com/Aravind-Mamidala/node-docker-app.git',
-    credentialsId: 'github-creds'
-                }
+                git branch: 'main',
+                    url: 'https://github.com/Aravind-Mamidala/node-docker-app.git',
+                    credentialsId: 'github-creds'
+            }
         }
 
         stage('Install Dependencies') {
@@ -57,24 +56,26 @@
             steps {
                 sh '''
                 docker build -t my-k8s-app:${BUILD_NUMBER} .
-                docker tag my-k8s-app:${BUILD_NUMBER} Aravind-Mamidala/my-k8s-app:latest
+                docker tag my-k8s-app:${BUILD_NUMBER} bunny1007/my-k8s-app:latest
                 '''
             }
         }
-        
-	stage('Docker Login') {
-    steps {
-        withCredentials([string(credentialsId: 'docker-creds', variable: 'TOKEN')]) {
-            sh """
-            docker login -u aravind-mamidala --password-stdin <<< "$TOKEN"
-            """
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([string(credentialsId: 'docker-creds', variable: 'TOKEN')]) {
+                    sh '''
+                    echo "$TOKEN" | docker login -u bunny1007 --password-stdin
+                    '''
+                }
+            }
         }
-    }
-}
 
         stage('Push Docker Image') {
             steps {
-                sh 'docker push docker.io/aravind-mamidala/my-k8s-app:latest'
+                sh '''
+                docker push docker.io/bunny1007/my-k8s-app:latest
+                '''
             }
         }
 
@@ -82,7 +83,7 @@
             steps {
                 sh '''
                 if ! minikube status | grep -q "apiserver: Running"; then
-                    echo "Minikube is not running. Starting now..."
+                    echo "Starting Minikube..."
                     minikube start --driver=docker --memory=2048 --cpus=2
                 fi
                 '''
@@ -92,15 +93,11 @@
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                # Load latest image into Minikube
-                # minikube image load Aravind-Mamidala/my-k8s-app:latest
-
-                # Apply manifests
                 minikube kubectl -- apply -f k8s/deployment.yaml
                 minikube kubectl -- apply -f k8s/service.yaml
-                minikube service my-k8s-app-service
                 '''
             }
         }
     }
 }
+
