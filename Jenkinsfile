@@ -24,14 +24,13 @@ pipeline {
             }
         }
 
-        
         stage('Create container') {
-            steps {
-                sh 'docker run -d -p 3000:8080 Aravind-Mamidala/node-docker-app:${BUILD_NUMBER}'
-            }
-        }
-
-
+    steps {
+        sh '''
+        docker run -d -p 3000:8080 node-docker-app:${BUILD_NUMBER}
+        '''
+    }
+    }
 
     }
 }
