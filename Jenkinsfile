@@ -31,18 +31,18 @@ pipeline {
         '''
     }
     }
-    stage('Deploy to Kubernetes'){
-            steps{
-                bat '''
-                set KUBECONFIG=C:\\Users\\Chandrashekar Gajula\\.kube\\config
+    stage('Deploy to Kubernetes') {
+    steps {
+        sh '''
+        export KUBECONFIG=$HOME/.kube/config
 
-                kubectl get nodes
-                minikube image load my-app1:latest
-                kubectl apply -f k8s/deployment.yaml
-                kubectl apply -f k8s/service.yaml
-                '''
-            }
-        }
+        kubectl get nodes
+        minikube image load node-docker-app:${BUILD_NUMBER}
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        '''
+    }
+}
 
     }
 }
