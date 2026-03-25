@@ -62,12 +62,12 @@
             }
         }
         
-       stage('Docker Login') {
+	stage('Docker Login') {
     steps {
         withCredentials([string(credentialsId: 'docker-creds', variable: 'TOKEN')]) {
-            sh '''
-            echo "$TOKEN" | docker login -u aravind-mamidala --password-stdin
-            '''
+            sh """
+            docker login -u aravind-mamidala --password-stdin <<< "$TOKEN"
+            """
         }
     }
 }
