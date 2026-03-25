@@ -61,10 +61,18 @@
                 '''
             }
         }
+        
+        stage('Docker Login') {
+    steps {
+        sh '''
+        echo "Aravind@123" | docker login -u aravind-mamidala --password-stdin
+        '''
+    }
+}
 
         stage('Push Docker Image') {
             steps {
-                sh 'docker push Aravind-Mamidala/my-k8s-app:latest'
+                sh 'docker push docker.io/aravind-mamidala/my-k8s-app:latest'
             }
         }
 
