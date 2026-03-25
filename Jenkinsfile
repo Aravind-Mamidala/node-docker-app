@@ -33,15 +33,16 @@
  //   }
  
 
-pipeline {
+
+ pipeline {
     agent any
 
     stages {
 
         stage('Checkout from GitHub') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Aravind-Mamidala/node-docker-app.git'
+                git branch: 'master',
+                    url: 'https://github.com/Aravind-Mamidala/node-k8s-app.git'
             }
         }
 
@@ -54,18 +55,39 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build -t node-docker-app:${BUILD_NUMBER} .
+                docker build -t my-k8s-app:${BUILD_NUMBER} .
+                docker tag my-k8s-app:${BUILD_NUMBER} Aravind-Mamidala/my-k8s-app:latest
                 '''
             }
         }
 
-        stage('Run Container (Clean)') {
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push Aravind-Mamidala/my-k8s-app:latest'
+            }
+        }
+
+        stage('Start Minikube if not running') {
             steps {
                 sh '''
-                docker ps -q --filter "publish=3000" | xargs -r docker stop
-                docker ps -aq --filter "publish=3000" | xargs -r docker rm
+                if ! minikube status | grep -q "apiserver: Running"; then
+                    echo "Minikube is not running. Starting now..."
+                    minikube start --driver=docker --memory=2048 --cpus=2
+                fi
+                '''
+            }
+        }
 
-                docker run -d -p 3000:8080 node-docker-app:${BUILD_NUMBER}
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                # Load latest image into Minikube
+                # minikube image load Aravind-Mamidala/my-k8s-app:latest
+
+                # Apply manifests
+                minikube kubectl -- apply -f k8s/deployment.yaml
+                minikube kubectl -- apply -f k8s/service.yaml
+                minikube service my-k8s-app-service
                 '''
             }
         }
