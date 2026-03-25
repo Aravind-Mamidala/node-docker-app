@@ -42,8 +42,9 @@
         stage('Checkout from GitHub') {
             steps {
                 git branch: 'master',
-                    url: 'https://github.com/Aravind-Mamidala/node-k8s-app.git'
-            }
+    url: 'https://github.com/Aravind-Mamidala/node-k8s-app.git',
+    credentialsId: 'github-creds'
+                }
         }
 
         stage('Install Dependencies') {
