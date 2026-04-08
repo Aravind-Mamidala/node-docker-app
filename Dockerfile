@@ -1,15 +1,12 @@
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files and node_modules installed on host
 COPY package*.json ./
-#install required dependencies
-RUN npm install
-#COPY node_modules ./node_modules
+RUN npm install --only=production
 
-# Copy rest of the source code
 COPY . .
 
-CMD ["npm", "start"]
+EXPOSE 3000
 
+CMD ["npm", "start"]

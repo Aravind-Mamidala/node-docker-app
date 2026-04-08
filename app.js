@@ -1,15 +1,12 @@
-const express = require('express');
-const add = require('./math');
+const http = require('http');
 
-const app = express();
+const PORT = 5000;
 
-// Root route
-app.get('/', (req, res) => {
-  const sum = add(2, 3);
-  res.send(`Sum is: ${sum}`);
+const server = http.createServer((req, res) => {
+    res.write("Hello Bunny 🐰 Docker Working Perfect!");
+    res.end();
 });
 
-// App listens on port 8080
-app.listen(8080, () => {
-  console.log("Server running on port 8080");
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
